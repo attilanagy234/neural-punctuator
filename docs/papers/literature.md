@@ -1,6 +1,7 @@
 # Papers
 ---
 ### Punctuation Prediction Model for Conversational Speech
+https://arxiv.org/pdf/1807.00543.pdf
  - Dataset: Fischer corpus (dialogues)
  - Used GloVe embeddings, trained on Common Web Crawl data
  - Models: CNN and BiLSTM
