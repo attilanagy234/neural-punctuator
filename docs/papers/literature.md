@@ -2,7 +2,7 @@
 ---
 ### Punctuation Prediction Model for Conversational Speech
 https://arxiv.org/pdf/1807.00543.pdf
- - Dataset: Fischer corpus (dialogues)
+ - **Dataset:** Fischer corpus (dialogues)
  - Retains blanks (no punctuation), dots, commas and question marks. Other punctuation classes were rejected (converted to blanks) due to their low frequency (e.g. exclamation marks or triple dots) or the fact that it is modeled by other properties of the representation (double dash - that marks an interruptions).
  - Used GloVe embeddings (300 dim), trained on Common Web Crawl data
  - Models: CNN and BiLSTM
@@ -22,7 +22,7 @@ http://www.lrec-conf.org/proceedings/lrec2016/pdf/103_Paper.pdf
 - Gives a nice literature overview --> we could refer to these papers in our own literature overview.
 - 4 classes in total: O (means no punctuation mark followed), COMMA, PERIOD and QUESTION.
 - Exclamation marks or semicolons are classified as PERIOD, while colons or dashes are classified as COMMA. There are no brackets in our data and all the other punctuation marks, such as quotation marks, are just ignored.
-- Dataset: TED Talks (IWSLT 2012 Evaluation Campaign - machine translation track) 
+- **Dataset:** TED Talks (IWSLT 2012 Evaluation Campaign - machine translation track) 
     - http://hltc.cs.ust.hk/iwslt/index.php/evaluation-campaign/ted-task.html
 - Several reports have indicated that the performance of punctuation prediction is largely influenced by the average number of punctuation marks per utterance in the dataset (Wang et al., 2012).
     - It is quite understandable that there
