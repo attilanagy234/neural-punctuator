@@ -6,7 +6,7 @@ Predicting punctuations with neural networks solely based on their textual repre
 ```
 .
 |-- docs
-|   └── literature  # Short summaries on the papers that we have read
+|   └── literature  # Short summaries on the papers/sources that we have read
 |   └── paper       # The submitted paper for the homework
 |-- notebooks       # Notebooks for EDA, preprocessing, model explorations and experiments
 |-- src
