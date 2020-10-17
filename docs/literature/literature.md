@@ -61,5 +61,11 @@ https://www.aclweb.org/anthology/2020.iwslt-1.33.pdf
 
 https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8682418
 
+### Overview of the IWSLT 2012 Evaluation Campaign
+[Paper]
+
+http://hltc.cs.ust.hk/iwslt/proceedings/overview12.pdf
+ - Summary on TED talk dataset
+
 
 
