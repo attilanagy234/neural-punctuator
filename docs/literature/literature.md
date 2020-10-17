@@ -41,3 +41,25 @@ http://www.lrec-conf.org/proceedings/lrec2016/pdf/103_Paper.pdf
 
 https://github.com/nkrnrnk/BertPunc
 
+### Using bidirectional LSTM with BERT for Chinese punctuation prediction
+[Paper]
+
+https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9172986&tag=1
+
+### Adversarial Transfer Learning for Punctuation Restoration
+[Paper]
+
+https://arxiv.org/pdf/2004.00248.pdf
+
+### Efficient Automatic Punctuation Restoration Using Bidirectional Transformers with Robust Inference
+[Paper] [SOTA]
+
+https://www.aclweb.org/anthology/2020.iwslt-1.33.pdf
+
+### Deep Recurrent Neural Networks with Layer-wise Multi-head Attentions for Punctuation Restoration
+[Paper]
+
+https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8682418
+
+
+
