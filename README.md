@@ -21,7 +21,8 @@ Predicting punctuations with neural networks solely based on their textual repre
         ├── wrappers        # Wrapper classes for the models containing all the components needed for training/prediction
         └── main.py         # Entry point
 ```
-
+## Dataset
+Ted talk dataset - Acquired from here: https://zenodo.org/record/4061423?fbclid=IwAR3IkZedUbnMtPrPdmkZJXUITd_AOzluiz53dhkR_Yc01TzbOpGo9TBjDBE#.X4sNB9AzaUk
 
 ## How to run
 TODO
