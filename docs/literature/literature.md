@@ -1,6 +1,9 @@
-# Papers
+# Notes on literature
 ---
+
 ### Punctuation Prediction Model for Conversational Speech
+[Paper]
+
 https://arxiv.org/pdf/1807.00543.pdf
  - **Dataset:** Fischer corpus (dialogues)
  - Retains blanks (no punctuation), dots, commas and question marks. Other punctuation classes were rejected (converted to blanks) due to their low frequency (e.g. exclamation marks or triple dots) or the fact that it is modeled by other properties of the representation (double dash - that marks an interruptions).
@@ -16,6 +19,8 @@ applied separately at each time step to retrieve punctuation prediction for a gi
     - a punctuation symbol, which appears after the word
 
 ### Punctuation Prediction for Unsegmented Transcript Based on Word Vector
+[Paper]
+
 http://www.lrec-conf.org/proceedings/lrec2016/pdf/103_Paper.pdf
 - Treats the classification problem as whether a word in the sequence is followed by a punctuation mark.
 - Classify whether a punctuation mark should be inserted after the third word of a 5-words sequence and which kind of punctuation mark the inserted one should be.
@@ -30,3 +35,9 @@ http://www.lrec-conf.org/proceedings/lrec2016/pdf/103_Paper.pdf
       utterance. In their evaluation, they remove all the segmentation from both the reference and ASR transcripts of IWSLT data files and there is only one single utterance existing in each dataset.
 - GloVe embeddings (50 dim)
 - Uses CNNs
+
+### BertPunc
+[Code]
+
+https://github.com/nkrnrnk/BertPunc
+
