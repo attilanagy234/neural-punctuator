@@ -77,3 +77,14 @@ def get_config_from_yaml(yaml_file):
     # Using DotMap we will be able to reference nested parameters via attribute such as x.y instead of x['y']
     config = DotMap(config_yaml)
     return config
+
+
+def get_target_weights(targets, output_dim):
+    targets = np.array(targets)
+    weights = np.zeros((output_dim,))
+    for t in range(output_dim):
+        count = (targets == t).sum()
+        weights[t] = count
+
+    weights /= weights.sum()
+    return weights

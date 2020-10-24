@@ -8,6 +8,7 @@ from torch.optim import AdamW  # TODO
 from torch import nn
 from torch.utils.tensorboard import SummaryWriter
 
+from neural_punctuator.utils.data import get_target_weights
 from neural_punctuator.utils.tensorboard import print_metrics
 
 output_dim = 4
@@ -31,7 +32,8 @@ if __name__ == '__main__':
 
     optimizer = AdamW(model.parameters(), lr=lr)
 
-    criterion = nn.NLLLoss()
+    target_weights = get_target_weights(train_dataset.targets)
+    criterion = nn.NLLLoss(weight=target_weights)
 
     summary_writer = SummaryWriter(comment=model_name)
     printer_counter = 0
