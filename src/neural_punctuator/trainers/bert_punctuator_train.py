@@ -100,7 +100,7 @@ if __name__ == '__main__':
                                targets.to(device).reshape(-1))
             mask = ((targets == 0) & (np.random.rand(*targets.shape) < .05)) | (targets != 0)
             losses = mask.view(-1).to(device) * losses
-            loss = losses.sum() / mask.sum()
+            valid_loss += losses.sum() / mask.sum()
 
             all_valid_preds.append(preds.detach().cpu().numpy())
 
