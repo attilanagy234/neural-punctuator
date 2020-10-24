@@ -86,5 +86,6 @@ def get_target_weights(targets, output_dim):
         count = (targets == t).sum()
         weights[t] = count
 
+    weights[0] *= 0.05
     weights /= weights.sum()
     return weights

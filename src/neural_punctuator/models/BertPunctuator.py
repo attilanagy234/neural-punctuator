@@ -12,10 +12,23 @@ class BertPunctuator(BaseModel):
         self.bert = torch.hub.load('huggingface/pytorch-transformers', 'model', 'albert-base-v1')
         self.bert.eval()
 
-        self.classifier = nn.Linear(768, output_dim)
+        self.classifier = Classifier(output_dim)
 
     def forward(self, x):
         embedding, _ = self.bert(x)
         output = self.classifier(embedding)
         output = F.log_softmax(output, dim=-1)
         return output
+
+
+class Classifier(BaseModel):
+    def __init__(self, output_dim):
+        super().__init__(None)
+        self.linear1 = nn.Linear(768, 1500)
+        self.linear2 = nn.Linear(1500, output_dim)
+        self.activation = nn.ReLU()
+
+    def forward(self, x):
+        x = self.activation(self.linear1(x))
+        x = self.linear2(x)
+        return x

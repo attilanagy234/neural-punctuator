@@ -1,16 +1,14 @@
 
 
 def print_metrics(counter,
-                  loss,
+                  metrics,
                   summary_writer=None,
                   prefix=None,
                   model_name=""):
 
-    print(
-        prefix+"\tloss: {0:.5f}".format(
-            loss
-        ))
+    print(prefix + "\t" + "\t".join([f"{key}:{value:.5f}" for key, value in metrics.items()]))
 
     if summary_writer is not None:
         assert prefix is not None
-        summary_writer.add_scalar(f'{model_name}_{prefix}_loss', loss, counter)
+        for key, value in metrics.items():
+            summary_writer.add_scalar(f'{model_name}_{prefix}_{key}', value, counter)
