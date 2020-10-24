@@ -18,21 +18,21 @@ lr = 1e-3
 device = torch.device("cuda:0")
 torch.cuda.set_device(device)
 model_name = "Albert"
-epochs = 5
+epochs = 20
 
 
 if __name__ == '__main__':
     train_dataset = BertDataset(data_path, prefix="train")
-    # valid_dataset = BertDataset(data_path, prefix="valid")
+    valid_dataset = BertDataset(data_path, prefix="valid")
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, num_workers=0, collate_fn=collate, shuffle=True)
-    # valid_loader = DataLoader(valid_dataset, batch_size=batch_size, collate_fn=collate)
+    valid_loader = DataLoader(valid_dataset, batch_size=batch_size, collate_fn=collate)
 
     model = BertPunctuator(output_dim).to(device)
 
     optimizer = AdamW(model.parameters(), lr=lr)
 
-    target_weights = get_target_weights(train_dataset.targets)
+    target_weights = torch.Tensor(get_target_weights(train_dataset.targets, output_dim)).to(device)
     criterion = nn.NLLLoss(weight=target_weights)
 
     summary_writer = SummaryWriter(comment=model_name)
@@ -59,3 +59,12 @@ if __name__ == '__main__':
             printer_counter += 1
 
         # Validate
+        for data in tqdm(valid_loader):
+            model.eval()
+
+            text, targets = data
+            output = model(text.to(device))
+            loss = criterion(output.view(-1, output_dim), targets.to(device).view(-1))
+            loss = loss.item()
+
+            print_metrics(printer_counter, loss, summary_writer, 'valid', model_name=model_name)
