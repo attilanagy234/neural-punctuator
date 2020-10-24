@@ -9,21 +9,24 @@ from torch.nn.utils.rnn import pad_sequence
 
 
 class BertDataset(Dataset):
-    def __init__(self, file_path, batch_size):
+    def __init__(self, data_path, prefix):
 
         self.seq_len = 512
-        self.batch_size = batch_size
 
-        with open(file_path, 'rb') as f:
-            encoded_texts = pickle.load(f)
+        with open(data_path + prefix + "_data.pkl", 'rb') as f:
+            texts, targets = pickle.load(f)
+            self.encoded_texts = [word for t in texts for word in t]
+            self.targets = [t for ts in targets for t in ts]
 
     def __getitem__(self, idx):
-        # TODO: not continous text
-        return torch.LongTensor(self.encoded_texts[idx * self.seq_len : (idx+1) * self.seq_len])
+        return torch.LongTensor(self.encoded_texts[idx * self.seq_len: (idx+1) * self.seq_len]),\
+               torch.LongTensor(self.targets[idx * self.seq_len: (idx+1) * self.seq_len])
 
     def __len__(self):
-        len(self.encoded_texts)//self.seq_len - 1
+        return len(self.encoded_texts)//self.seq_len - 1
 
 
-def collate(batch, seq_len, PAD_ID):
-    return pad_sequence(batch, batch_first=True, padding_value=PAD_ID)
+def collate(batch):
+    texts, targets = zip(*batch)
+    return torch.stack(texts), torch.stack(targets)
+    # return pad_sequence(batch, batch_first=True, padding_value=PAD_ID)
