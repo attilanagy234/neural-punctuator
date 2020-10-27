@@ -16,6 +16,7 @@ log.addHandler(handler)
 
 BAD_SYMBOLS_RE = re.compile('[^0-9a-z #+_]')
 
+# TODO: We might have some unused stuff here, remove them!!
 
 def get_mask_from_lengths(lengths):
     """

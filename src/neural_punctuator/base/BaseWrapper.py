@@ -12,7 +12,7 @@ class BaseWrapper(ABC):
         self._trainer = None
 
     def train(self):
-        self._trainer.train()
+        raise NotImplementedError
 
     def predict(self, *args):
         raise NotImplementedError
