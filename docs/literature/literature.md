@@ -77,5 +77,5 @@ http://hltc.cs.ust.hk/iwslt/proceedings/overview12.pdf
 ## Potential dataset to use:
 - https://rgai.inf.u-szeged.hu/node/128
 - Babel: https://www.researchgate.net/publication/221481223_BABEL_An_Eastern_European_multi-language_database
-
+- Broadcast news: https://www.researchgate.net/publication/221487490_The_COST278_broadcast_news_segmentation_and_speaker_clustering_evaluation_-_overview_methodology_systems_results
 
