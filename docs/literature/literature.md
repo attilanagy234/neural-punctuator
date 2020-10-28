@@ -69,9 +69,9 @@ http://hltc.cs.ust.hk/iwslt/proceedings/overview12.pdf
 
 --
 ## Papers by Hungarian authors that we should check (maybe they used hungarian datasets that we could compare to):
- - [] http://acta.uni-obuda.hu/Szaszak_89.pdf
- - [] https://www.isca-speech.org/archive/Interspeech_2019/pdfs/2132.pdf
- - [] https://www.researchgate.net/publication/327977369_Joint_Word-and_Character-level_Embedding_CNN-RNN_Models_for_Punctuation_Restoration
- - [] https://ieeexplore.ieee.org/document/8268227
+ - [ ] http://acta.uni-obuda.hu/Szaszak_89.pdf
+ - [ ] https://www.isca-speech.org/archive/Interspeech_2019/pdfs/2132.pdf
+ - [ ] https://www.researchgate.net/publication/327977369_Joint_Word-and_Character-level_Embedding_CNN-RNN_Models_for_Punctuation_Restoration
+ - [ ] https://ieeexplore.ieee.org/document/8268227
 
 
