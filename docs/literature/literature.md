@@ -73,5 +73,8 @@ http://hltc.cs.ust.hk/iwslt/proceedings/overview12.pdf
  - [ ] https://www.isca-speech.org/archive/Interspeech_2019/pdfs/2132.pdf
  - [ ] https://www.researchgate.net/publication/327977369_Joint_Word-and_Character-level_Embedding_CNN-RNN_Models_for_Punctuation_Restoration
  - [ ] https://ieeexplore.ieee.org/document/8268227
+ 
+## Potential dataset to use:
+- https://rgai.inf.u-szeged.hu/node/128
 
 
