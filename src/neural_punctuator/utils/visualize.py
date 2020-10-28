@@ -44,7 +44,8 @@ def init_confusion_matrix(conf_mx, classes,
     plt.xlabel('Predicted label')
 
 
-def plot_confusion_matrix(conf_mx, class_names):
+def plot_confusion_matrix(conf_mx, class_names=["_", ".", "?", ","]):
+    # TODO: load targets labels from config
     plt.figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
     init_confusion_matrix(conf_mx, classes=class_names, title='Confusion matrix')
     plt.show()

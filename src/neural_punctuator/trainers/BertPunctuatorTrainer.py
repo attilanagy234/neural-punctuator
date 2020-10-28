@@ -11,7 +11,10 @@ from torch import nn
 from torch.utils.tensorboard import SummaryWriter
 
 from neural_punctuator.utils.data import get_target_weights
+from neural_punctuator.utils.metrics import get_total_grad_norm, get_eval_metrics
 from neural_punctuator.utils.tensorboard import print_metrics
+from neural_punctuator.utils.scheduler import LinearScheduler
+import numpy as np
 
 
 handler = logging.StreamHandler(sys.stdout)
@@ -34,8 +37,8 @@ class BertPunctuatorTrainer(BaseTrainer):
             self.device = torch.device('cpu')
 
         self.train_dataset, self.valid_dataset = get_datasets(config)
-        self.train_loader, self.valid_loader = get_data_loaders(config)
-        self.model = BertPunctuator(self._config.model.num_classes).to(self.device)
+        self.train_loader, self.valid_loader = get_data_loaders(self.train_dataset, self.valid_dataset, config)
+        self.model = model.to(self.device)  #BertPunctuator(self._config).to(self.device)
 
         if self._config.trainer.loss == 'NLLLoss':
             target_weights = torch.Tensor(get_target_weights(self.train_dataset.targets,
@@ -45,14 +48,20 @@ class BertPunctuatorTrainer(BaseTrainer):
             log.error('Please provide a proper loss function')
             exit(1)
 
-        if self._config.model.optimizer == 'adam':
-            self.optimizer = torch.optim.Adam(self._model.parameters(), lr=self._config.model.learning_rate)
+        if self._config.trainer.optimizer == 'adam':
+            self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self._config.trainer.learning_rate)
 
-        elif self._config.model.optimizer == 'adamw':
-            self.optimizer = torch.optim.AdamW(self._model.parameters(), lr=self._config.model.learning_rate)
+        elif self._config.trainer.optimizer == 'adamw':
+            self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=self._config.trainer.learning_rate)
         else:
             log.error('Please provide a proper optimizer')
             exit(1)
+
+        # TODO: add to config
+        self.sched = LinearScheduler(self.optimizer, self._config.trainer.warmup_steps)
+
+        # TODO:
+        self.all_valid_target = np.concatenate([targets.numpy() for _, targets in self.valid_loader])
 
         self.summary_writer = SummaryWriter(comment=self._config.experiment.name)
 
@@ -61,35 +70,58 @@ class BertPunctuatorTrainer(BaseTrainer):
 
         for epoch_num in range(self._config.trainer.num_epochs):
             log.info(f"Epoch #{epoch_num}")
+
             # Train loop
+            self.model.classifier.train()
             for data in tqdm(self.train_loader):
-                self.model.classifier.train()
                 self.optimizer.zero_grad()
 
                 text, targets = data
-                output = self.model(text.to(self.device))
+                preds = self.model(text.to(self.device))
 
-                loss = self.criterion(output.view(-1, self._config.model.num_classes), targets.to(self.device).view(-1))
-
+                preds = preds[:, self._config.trainer.clip_seq: -self._config.trainer.clip_seq, :]
+                targets = targets[:, self._config.trainer.clip_seq:-self._config.trainer.clip_seq]
+                losses = self.criterion(preds.reshape(-1, self._config.model.num_classes),
+                                   targets.to(self.device).reshape(-1))
+                mask = ((targets == 0) & (np.random.rand(*targets.shape) < .05)) | (targets != 0)
+                losses = mask.view(-1).to(self.device) * losses
+                loss = losses.sum() / mask.sum()
                 loss.backward()
+                nn.utils.clip_grad_norm_(self.model.parameters(), self._config.trainer.grad_clip)
+
                 self.optimizer.step()
+                self.sched.step()
 
                 loss = loss.item()
 
                 if printer_counter != 0 and printer_counter % 10 == 0:
-                    print_metrics(printer_counter, loss, self.summary_writer, 'train', model_name=self._config.experiment.name)
+                    grads = get_total_grad_norm(self.model.parameters())
+                    print_metrics(printer_counter, {"loss": loss, "grads": grads}, self.summary_writer, 'train',
+                                  model_name=self._config.experiment.name)
                 printer_counter += 1
 
+                break
+
             # Valid loop
+            self.model.eval()
+            valid_loss = 0
+            all_valid_preds = []
             for data in tqdm(self.valid_loader):
-                self.model.eval()
-
                 text, targets = data
-                output = self.model(text.to(self.device))
-                loss = self.criterion(output.view(-1, self._config.model.num_classes), targets.to(self.device).view(-1))
-                loss = loss.item()
+                preds = self.model(text.to(self.device))
+                loss = self.criterion(preds.view(-1, self._config.model.num_classes), targets.to(self.device).view(-1))
+                valid_loss += loss.item()
 
-                print_metrics(printer_counter, loss, self.summary_writer, 'valid', model_name=self._config.experiment.name)
+                all_valid_preds.append(preds.detach().cpu().numpy())
+
+            valid_loss /= len(self.valid_loader)
+            all_valid_preds = np.concatenate(all_valid_preds)
+
+            metrics = get_eval_metrics(self.all_valid_target, all_valid_preds, self._config)
+            metrics["loss"] = valid_loss
+
+            print_metrics(printer_counter, metrics, self.summary_writer, 'valid',
+                          model_name=self._config.experiment.name)
 
 
 
