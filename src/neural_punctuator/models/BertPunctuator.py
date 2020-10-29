@@ -1,3 +1,5 @@
+from typing import Any
+
 import torch
 from torch import nn
 import torch.nn.functional as F
@@ -10,15 +12,35 @@ class BertPunctuator(BaseModel):
     def __init__(self, config):
         super().__init__(config)
         self.bert = torch.hub.load(self._config.model.bert_github_repo, 'model', self._config.model.bert_variant_to_load)
-        self.bert.eval()
 
         self.classifier = Classifier(self._config)
 
     def forward(self, x):
-        embedding, _ = self.bert(x)
+        if self._config.trainer.train_bert:
+            embedding, _ = self.bert(x)
+        else:
+            with torch.no_grad():
+                embedding, _ = self.bert(x)
+
         output = self.classifier(embedding)
         output = F.log_softmax(output, dim=-1)
         return output
+
+    def train(self, mode=True):
+        if mode:
+            if self._config.trainer.train_bert:
+                self.bert.train()
+            else:
+                self.bert.eval()
+            self.classifier.train()
+        else:
+            self.bert.eval()
+            self.classifier.eval()
+        return self
+
+    def eval(self):
+        self.train(False)
+        return self
 
 
 class Classifier(BaseModel):

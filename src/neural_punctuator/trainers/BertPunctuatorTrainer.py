@@ -30,6 +30,8 @@ class BertPunctuatorTrainer(BaseTrainer):
     def __init__(self, model, preprocessor, config):
         super().__init__(model, preprocessor, config)
 
+        # TODO: fix random seed: np, torch
+
         if self._config.trainer.use_gpu:
             self.device = torch.device('cuda:0')
             torch.cuda.set_device(self.device)

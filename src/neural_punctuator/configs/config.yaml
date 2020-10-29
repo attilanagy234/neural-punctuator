@@ -36,3 +36,4 @@ trainer:
   warmup_steps: 200
   clip_seq: 32
   grad_clip: 3
+  train_bert: false
