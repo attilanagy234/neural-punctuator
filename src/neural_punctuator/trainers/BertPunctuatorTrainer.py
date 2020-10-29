@@ -11,6 +11,7 @@ from torch import nn
 from torch.utils.tensorboard import SummaryWriter
 
 from neural_punctuator.utils.data import get_target_weights
+from neural_punctuator.utils.io import save
 from neural_punctuator.utils.metrics import get_total_grad_norm, get_eval_metrics
 from neural_punctuator.utils.tensorboard import print_metrics
 from neural_punctuator.utils.scheduler import LinearScheduler
@@ -63,7 +64,11 @@ class BertPunctuatorTrainer(BaseTrainer):
         # TODO:
         self.all_valid_target = np.concatenate([targets.numpy() for _, targets in self.valid_loader])
 
-        self.summary_writer = SummaryWriter(comment=self._config.experiment.name)
+        if self._config.debug.summary_writer:
+            self.summary_writer = SummaryWriter(comment=self._config.experiment.name)
+            #TODO: self.summary_writer.add_hparams(self._config.toDict(), {})
+        else:
+            self.summary_writer = None
 
     def train(self):
         printer_counter = 0
@@ -100,7 +105,8 @@ class BertPunctuatorTrainer(BaseTrainer):
                                   model_name=self._config.experiment.name)
                 printer_counter += 1
 
-                break
+                if self._config.debug.break_train_loop:
+                    break
 
             # Valid loop
             self.model.eval()
@@ -123,5 +129,6 @@ class BertPunctuatorTrainer(BaseTrainer):
             print_metrics(printer_counter, metrics, self.summary_writer, 'valid',
                           model_name=self._config.experiment.name)
 
-
+            # Save model every epoch
+            save(self.model, self.optimizer, epoch_num+1, metrics, self._config)
 

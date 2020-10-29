@@ -1,6 +1,7 @@
 import logging
 import sys
 import pickle
+import torch
 
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)-9s %(message)s'))
@@ -25,3 +26,22 @@ def load_object(filename):
         loaded_obj = pickle.load(file)
         log.info('Loaded object from local path...')
     return loaded_obj
+
+
+def save(model, optimizer, epoch, metrics, config):
+    torch.save({
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'metrics': metrics,
+    }, config.model.save_model_path + config.experiment.name + "-epoch-" + str(epoch) + ".pth")
+
+
+def load(model, optimizer, epoch, config=None, file_path=None):
+    if file_path is None:
+        file_path = config.model.save_model_path + config.experiment.name + "-epoch-" + epoch + ".pth"
+    checkpoint = torch.load(file_path)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    # epoch = checkpoint['epoch']
+    # loss = checkpoint['loss']

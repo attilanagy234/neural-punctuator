@@ -1,8 +1,12 @@
+debug:
+  summary_writer: true
+  break_train_loop: false
+
 experiment:
   name: albert-neural-punctuator
 
 data:
-  data_path: D:/Downloads/ted_dataset.tar/ted_dataset/
+  data_path: D:/Data/neural-punctuator/ted_dataset/
   train_file: TODO
   test_file: TODO
 
@@ -19,7 +23,7 @@ model:
   num_classes: 4
 
 
-  save_model_path: = TODO
+  save_model_path: D:/Data/neural-punctuator/models/
 trainer:
   use_gpu: true
   batch_size: 4
