@@ -17,6 +17,9 @@ from neural_punctuator.utils.tensorboard import print_metrics
 from neural_punctuator.utils.scheduler import LinearScheduler
 import numpy as np
 
+torch.manual_seed(69)
+np.random.seed(69)
+
 
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)-9s %(message)s'))
@@ -42,6 +45,7 @@ class BertPunctuatorTrainer(BaseTrainer):
         self.train_dataset, self.valid_dataset = get_datasets(config)
         self.train_loader, self.valid_loader = get_data_loaders(self.train_dataset, self.valid_dataset, config)
         self.model = model.to(self.device)  #BertPunctuator(self._config).to(self.device)
+        self.model.train()
 
         if self._config.trainer.loss == 'NLLLoss':
             target_weights = torch.Tensor(get_target_weights(self.train_dataset.targets,
@@ -79,7 +83,7 @@ class BertPunctuatorTrainer(BaseTrainer):
             log.info(f"Epoch #{epoch_num}")
 
             # Train loop
-            self.model.classifier.train()
+            self.model.train()
             for data in tqdm(self.train_loader):
                 self.optimizer.zero_grad()
 

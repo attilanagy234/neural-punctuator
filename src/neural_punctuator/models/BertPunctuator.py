@@ -13,14 +13,20 @@ class BertPunctuator(BaseModel):
         super().__init__(config)
         self.bert = torch.hub.load(self._config.model.bert_github_repo, 'model', self._config.model.bert_variant_to_load)
 
+        if not self._config.trainer.train_bert:
+            for param in self.bert.parameters():
+                param.requires_grad = False
+
         self.classifier = Classifier(self._config)
 
     def forward(self, x):
-        if self._config.trainer.train_bert:
-            embedding, _ = self.bert(x)
-        else:
-            with torch.no_grad():
-                embedding, _ = self.bert(x)
+        # if self._config.trainer.train_bert:
+        #     embedding, _ = self.bert(x)
+        # else:
+        #     with torch.no_grad():
+        #         embedding, _ = self.bert(x)
+
+        embedding, _ = self.bert(x)
 
         output = self.classifier(embedding)
         output = F.log_softmax(output, dim=-1)
