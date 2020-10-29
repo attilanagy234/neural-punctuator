@@ -66,6 +66,11 @@ https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8682418
 
 http://hltc.cs.ust.hk/iwslt/proceedings/overview12.pdf
  - Summary on TED talk dataset
+ 
+ ### RNN models for Hungarian (dataset not available)
+ [Code]
+ 
+ https://github.com/tundik/HuPP
 
 --
 ## Papers by Hungarian authors that we should check (maybe they used hungarian datasets that we could compare to):
