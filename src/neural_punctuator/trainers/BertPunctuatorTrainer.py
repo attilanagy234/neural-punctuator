@@ -123,7 +123,8 @@ class BertPunctuatorTrainer(BaseTrainer):
             all_valid_preds = []
             for data in tqdm(self.valid_loader):
                 text, targets = data
-                preds = self.model(text.to(self.device))
+                with torch.no_grad():
+                    preds = self.model(text.to(self.device))
                 loss = self.criterion(preds.view(-1, self._config.model.num_classes), targets.to(self.device).view(-1))
                 valid_loss += loss.item()
 
