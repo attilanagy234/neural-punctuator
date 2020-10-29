@@ -3,7 +3,7 @@ debug:
   break_train_loop: false
 
 experiment:
-  name: albert-freezed
+  name: albert
 
 data:
   data_path: D:/Data/neural-punctuator/ted_dataset/
@@ -19,23 +19,25 @@ model:
   bert_github_repo: huggingface/pytorch-transformers        # Github repository, where the BERT-like model is located
   bert_variant_to_load: albert-base-v1                      # Name of the model loaded from torch hub
   bert_output_dim: 768
-  linear_hidden_dim: 1536
+  linear_hidden_dim: 512
   num_classes: 4
+  seq_len: 512
 
 
   save_model_path: D:/Data/neural-punctuator/models_/
 trainer:
   use_gpu: true
-  batch_size: 16
-  num_epochs: 10
+  batch_size: 32
+  num_epochs: 5
   shuffle: true
   optimizer: adamw
   loss: NLLLoss
-  learning_rate: 0.0001
+  learning_rate: 0.001
   metrics: [precision, recall, f-score, auc]
-  warmup_steps: 200
+  warmup_steps: 50
   clip_seq: 32
-  grad_clip: 3
+  grad_clip: 5
   train_bert: false
-  load_model: D:\Data\neural-punctuator\models
+  load_model: D:/Data/neural-punctuator/models/
+  seq_shift: 32   # Shift each training sample +-seq_shift to get more different samples
 

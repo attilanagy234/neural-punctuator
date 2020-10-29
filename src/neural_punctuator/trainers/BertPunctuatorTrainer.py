@@ -11,7 +11,7 @@ from torch import nn
 from torch.utils.tensorboard import SummaryWriter
 
 from neural_punctuator.utils.data import get_target_weights
-from neural_punctuator.utils.io import save
+from neural_punctuator.utils.io import save, load
 from neural_punctuator.utils.metrics import get_total_grad_norm, get_eval_metrics
 from neural_punctuator.utils.tensorboard import print_metrics
 from neural_punctuator.utils.scheduler import LinearScheduler
@@ -63,6 +63,9 @@ class BertPunctuatorTrainer(BaseTrainer):
         else:
             log.error('Please provide a proper optimizer')
             exit(1)
+
+        if self._config.trainer.train_bert:
+            load(self.model, self.optimizer, self._config)
 
         # TODO: add to config
         self.sched = LinearScheduler(self.optimizer, self._config.trainer.warmup_steps)

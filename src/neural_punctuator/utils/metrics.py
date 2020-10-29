@@ -14,7 +14,7 @@ log.addHandler(handler)
 
 
 def get_eval_metrics(targets, preds, config=None):
-    # TODO: get the desired metric list from config.yaml
+    # TODO: get the desired metric list from config-frozen.yaml
     """
     Calculates metrics on validation data
     """

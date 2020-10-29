@@ -37,11 +37,7 @@ def save(model, optimizer, epoch, metrics, config):
     }, config.model.save_model_path + config.experiment.name + "-epoch-" + str(epoch) + ".pth")
 
 
-def load(model, optimizer, epoch, config=None, file_path=None):
-    if file_path is None:
-        file_path = config.model.save_model_path + config.experiment.name + "-epoch-" + epoch + ".pth"
-    checkpoint = torch.load(file_path)
+def load(model, optimizer, config=None):
+    checkpoint = torch.load(config.model.save_model_path + config.trainer.load_model)
     model.load_state_dict(checkpoint['model_state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-    # epoch = checkpoint['epoch']
-    # loss = checkpoint['loss']
+    # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])

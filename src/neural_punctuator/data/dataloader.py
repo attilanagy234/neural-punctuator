@@ -9,21 +9,29 @@ from torch.nn.utils.rnn import pad_sequence
 
 
 class BertDataset(Dataset):
-    def __init__(self, data_path, prefix):
+    def __init__(self, prefix, config, is_train=False):
 
-        self.seq_len = 512
+        self.config = config
+        self.is_train = is_train
 
-        with open(data_path + prefix + "_data.pkl", 'rb') as f:
+        with open(config.data.data_path + prefix + "_data.pkl", 'rb') as f:
             texts, targets = pickle.load(f)
             self.encoded_texts = [word for t in texts for word in t]
             self.targets = [t for ts in targets for t in ts]
 
     def __getitem__(self, idx):
-        return torch.LongTensor(self.encoded_texts[idx * self.seq_len: (idx+1) * self.seq_len]),\
-               torch.LongTensor(self.targets[idx * self.seq_len: (idx+1) * self.seq_len])
+
+        shift = np.random.randint(self.config.trainer.seq_shift) - self.config.trainer.seq_shift // 2\
+            if self.is_train else 0
+
+        start_idx = idx * self.config.model.seq_len + shift
+        start_idx = max(0, start_idx)
+        end_idx = start_idx + self.config.model.seq_len
+        return torch.LongTensor(self.encoded_texts[start_idx: end_idx]),\
+               torch.LongTensor(self.targets[start_idx: end_idx])
 
     def __len__(self):
-        return len(self.encoded_texts)//self.seq_len - 1
+        return len(self.encoded_texts)//self.config.model.seq_len - 1
 
 
 def collate(batch):
@@ -33,8 +41,8 @@ def collate(batch):
 
 
 def get_datasets(config):
-    train_dataset = BertDataset(config.data.data_path, prefix="train")
-    valid_dataset = BertDataset(config.data.data_path, prefix="valid")
+    train_dataset = BertDataset("train", config, is_train=True)
+    valid_dataset = BertDataset("valid", config)
     return train_dataset, valid_dataset
 
 
