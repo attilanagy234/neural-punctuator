@@ -50,11 +50,15 @@ class BertPunctuator(BaseModel):
 class Classifier(BaseModel):
     def __init__(self, config):
         super().__init__(None)
+        self.dropout1 = nn.Dropout(config.model.dropout)
         self.linear1 = nn.Linear(config.model.bert_output_dim, config.model.linear_hidden_dim)
+        self.dropout2 = nn.Dropout(config.model.dropout)
         self.linear2 = nn.Linear(config.model.linear_hidden_dim, config.model.num_classes)
         self.activation = nn.ReLU()
 
     def forward(self, x):
+        x = self.dropout1(x)
         x = self.activation(self.linear1(x))
+        x = self.dropout2(x)
         x = self.linear2(x)
         return x

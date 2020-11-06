@@ -25,40 +25,39 @@ def get_eval_metrics(targets, preds, config=None):
     targets = targets.reshape(-1)
     pred_index = preds.argmax(-1)
 
-    metric_targets = np.zeros((targets.size, config.model.num_classes))
-    metric_targets[np.arange(targets.size), targets] = 1
+    # One-hot encode targets
+    # metric_targets = np.zeros((targets.size, config.model.num_classes))
+    # metric_targets[np.arange(targets.size), targets] = 1
 
-    cls_report = get_classification_report(metric_targets, pred_index)
-
-
+    cls_report = get_classification_report(targets, pred_index)
 
     print(cls_report)
 
     # if 'precision' in self._config.trainer.metrics:
 
     if True:
-        macro_precision = precision_score(metric_targets, pred_index, average='macro')
+        macro_precision = precision_score(targets, pred_index, average='macro')
         log.info(f'Macro precision is: {macro_precision}')
         metrics['precision'] = macro_precision
     # if 'recall' in self._config.trainer.metrics:
     if True:
-        macro_recall = recall_score(metric_targets, pred_index, average='macro')
+        macro_recall = recall_score(targets, pred_index, average='macro')
         log.info(f'Macro recall is {macro_recall}')
         metrics['recall'] = macro_recall
     # if 'f_score' in self._config.trainer.metrics:
     if True:
-        macro_f1_score = f1_score(metric_targets, pred_index, average='macro')
+        macro_f1_score = f1_score(targets, pred_index, average='macro')
         log.info(f'Macro f-score is {macro_f1_score}')
         metrics['f_score'] = macro_f1_score
     # if 'auc' in self._config.trainer.metrics:
     if True:
-        auc_score = roc_auc_score(metric_targets, preds, average='macro', multi_class='ovo')
+        auc_score = roc_auc_score(targets, preds, average='macro', multi_class='ovo')
         log.info(f'AUC is: {auc_score}')
         metrics['auc'] = auc_score
 
     # if self._config.trainer.visualize_conf_mx:
     if True:
-        conf_mx = get_confusion_mx(metric_targets, pred_index)
+        conf_mx = get_confusion_mx(targets, pred_index)
         plot_confusion_matrix(conf_mx)
 
     return metrics

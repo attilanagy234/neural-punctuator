@@ -64,7 +64,7 @@ class BertPunctuatorTrainer(BaseTrainer):
             log.error('Please provide a proper optimizer')
             exit(1)
 
-        if self._config.trainer.train_bert:
+        if self._config.trainer.load_model:
             load(self.model, self.optimizer, self._config)
 
         # TODO: add to config
@@ -72,6 +72,7 @@ class BertPunctuatorTrainer(BaseTrainer):
 
         # TODO:
         self.all_valid_target = np.concatenate([targets.numpy() for _, targets in self.valid_loader])
+        self.all_valid_target = self.all_valid_target[self.all_valid_target != -1]
 
         if self._config.debug.summary_writer:
             self.summary_writer = SummaryWriter(comment=self._config.experiment.name)
@@ -93,11 +94,19 @@ class BertPunctuatorTrainer(BaseTrainer):
                 text, targets = data
                 preds = self.model(text.to(self.device))
 
-                preds = preds[:, self._config.trainer.clip_seq: -self._config.trainer.clip_seq, :]
-                targets = targets[:, self._config.trainer.clip_seq:-self._config.trainer.clip_seq]
+                # preds = preds[:, self._config.trainer.clip_seq: -self._config.trainer.clip_seq, :]
+                # targets = targets[:, self._config.trainer.clip_seq:-self._config.trainer.clip_seq]
+
+                # Mask some "empty" targets
+                mask = ((targets == 0) & (np.random.rand(*targets.shape) < .1)) | (targets > 0)
+
+                # Do not predict output after tokens which are not the end of a word
+                not_a_word_mask = targets == -1
+                targets[not_a_word_mask] = 0
+
                 losses = self.criterion(preds.reshape(-1, self._config.model.num_classes),
                                    targets.to(self.device).reshape(-1))
-                mask = ((targets == 0) & (np.random.rand(*targets.shape) < .05)) | (targets != 0)
+                mask = ~not_a_word_mask * mask
                 losses = mask.view(-1).to(self.device) * losses
                 loss = losses.sum() / mask.sum()
                 loss.backward()
@@ -125,6 +134,11 @@ class BertPunctuatorTrainer(BaseTrainer):
                 text, targets = data
                 with torch.no_grad():
                     preds = self.model(text.to(self.device))
+
+                word_mask = targets != -1
+                preds = preds[word_mask]
+                targets = targets[word_mask]
+
                 loss = self.criterion(preds.view(-1, self._config.model.num_classes), targets.to(self.device).view(-1))
                 valid_loss += loss.item()
 

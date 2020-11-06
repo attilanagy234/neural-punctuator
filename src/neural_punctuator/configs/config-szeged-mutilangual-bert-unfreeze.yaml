@@ -3,10 +3,10 @@ debug:
   break_train_loop: false
 
 experiment:
-  name: albert-unfreezed-continue
+  name: multilangial-bert-unfreezed
 
 data:
-  data_path: D:/Data/neural-punctuator/ted_dataset/
+  data_path: D:/Data/neural-punctuator/ted_dataset/szeged/
   train_file: TODO
   test_file: TODO
 
@@ -15,9 +15,9 @@ preprocessor:
 
 
 model:
-  name: albert
+  name: multilangial-bert
   bert_github_repo: huggingface/pytorch-transformers        # Github repository, where the BERT-like model is located
-  bert_variant_to_load: albert-base-v1                      # Name of the model loaded from torch hub
+  bert_variant_to_load: bert-base-multilingual-uncased      # Name of the model loaded from torch hub
   bert_output_dim: 768
   linear_hidden_dim: 1568
   num_classes: 4
@@ -39,6 +39,6 @@ trainer:
   clip_seq: 32
   grad_clip: 3
   train_bert: true
-  load_model: albert-unfreezed-epoch-10.pth # None
+  load_model:
   seq_shift: 32   # Shift each training sample +-seq_shift to get more different samples
 
