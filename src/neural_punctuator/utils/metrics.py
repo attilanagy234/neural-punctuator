@@ -3,7 +3,7 @@ import sys
 from sklearn.metrics import classification_report, confusion_matrix, f1_score, roc_auc_score, precision_score, recall_score
 import numpy as np
 
-from src.neural_punctuator.utils.visualize import plot_confusion_matrix
+from neural_punctuator.utils.visualize import plot_confusion_matrix
 
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)-9s %(message)s'))
@@ -12,20 +12,23 @@ log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 log.addHandler(handler)
 
-# TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-output_dim = 4
 
 def get_eval_metrics(targets, preds, config=None):
-    # TODO: get the desired metric list from config.yaml
+    # TODO: get the desired metric list from config-frozen.yaml
     """
     Calculates metrics on validation data
     """
     metrics = {}
 
     preds = np.exp(preds)
-    preds = preds.reshape(-1, output_dim)
+    preds = preds.reshape(-1, config.model.num_classes)
     targets = targets.reshape(-1)
     pred_index = preds.argmax(-1)
+
+    # One-hot encode targets
+    # metric_targets = np.zeros((targets.size, config.model.num_classes))
+    # metric_targets[np.arange(targets.size), targets] = 1
+
     cls_report = get_classification_report(targets, pred_index)
 
     print(cls_report)
@@ -60,12 +63,12 @@ def get_eval_metrics(targets, preds, config=None):
     return metrics
 
 
-def get_classification_report(targets, preds):
-    return classification_report(targets, preds, digits=3)
+def get_classification_report(target, preds):
+    return classification_report(target, preds, digits=3)
 
 
-def get_confusion_mx(targets, preds):
-    return confusion_matrix(targets, preds)
+def get_confusion_mx(target, preds):
+    return confusion_matrix(target, preds)
 
 
 def get_total_grad_norm(parameters, norm_type=2):

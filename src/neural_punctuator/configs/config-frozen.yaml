@@ -1,0 +1,44 @@
+debug:
+  summary_writer: true
+  break_train_loop: false
+
+experiment:
+  name: albert
+
+data:
+  data_path: D:/Data/neural-punctuator/ted_dataset/
+  train_file: TODO
+  test_file: TODO
+
+preprocessor:
+  preproc_arg: TODO
+
+
+model:
+  name: albert
+  bert_github_repo: huggingface/pytorch-transformers        # Github repository, where the BERT-like model is located
+  bert_variant_to_load: albert-base-v1                      # Name of the model loaded from torch hub
+  bert_output_dim: 768
+  linear_hidden_dim: 1568
+  num_classes: 4
+  seq_len: 512
+  dropout: 0.2
+
+
+  save_model_path: D:/Data/neural-punctuator/models/
+trainer:
+  use_gpu: true
+  batch_size: 32
+  num_epochs: 5
+  shuffle: true
+  optimizer: adamw
+  loss: NLLLoss
+  learning_rate: 0.001
+  metrics: [precision, recall, f-score, auc]
+  warmup_steps: 20
+  clip_seq: 32
+  grad_clip: 3
+  train_bert: false
+  load_model: D:/Data/neural-punctuator/models/
+  seq_shift: 32   # Shift each training sample +-seq_shift to get more different samples
+

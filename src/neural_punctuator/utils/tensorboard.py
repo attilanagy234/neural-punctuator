@@ -12,3 +12,4 @@ def print_metrics(counter,
         assert prefix is not None
         for key, value in metrics.items():
             summary_writer.add_scalar(f'{model_name}_{prefix}_{key}', value, counter)
+

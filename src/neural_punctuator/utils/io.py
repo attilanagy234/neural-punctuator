@@ -28,10 +28,16 @@ def load_object(filename):
     return loaded_obj
 
 
-def save_model(model, optimizer, path, name, epoch, metrics):
+def save(model, optimizer, epoch, metrics, config):
     torch.save({
         'epoch': epoch,
         'model_state_dict': model.state_dict(),
         'optimizer_state_dict': optimizer.state_dict(),
         'metrics': metrics,
-    }, path + name)
+    }, config.model.save_model_path + config.experiment.name + "-epoch-" + str(epoch) + ".pth")
+
+
+def load(model, optimizer, config=None):
+    checkpoint = torch.load(config.model.save_model_path + config.trainer.load_model)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])

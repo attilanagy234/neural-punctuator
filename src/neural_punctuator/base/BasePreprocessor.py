@@ -9,7 +9,7 @@ class BasePreprocessor(ABC):
         self._config = config
 
     @abstractmethod
-    def transform(self, df):
+    def transform(self, *args):
         """
         Transforms:
             - textual descriptions to vectorized features
@@ -18,7 +18,7 @@ class BasePreprocessor(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def inverse_transform(self, y):
+    def inverse_transform(self, *args):
         """
         Transforms encoded labels back to textual labels
         """
