@@ -33,12 +33,13 @@ trainer:
   shuffle: true
   optimizer: adamw
   loss: NLLLoss
-  learning_rate: 0.0001
+  base_learning_rate: 0.00005 #5e-5
+  classifier_learning_rate: 0.0001 #1e-4
   metrics: [precision, recall, f-score, auc]
   warmup_steps: 100 #200
   clip_seq: 32
   grad_clip: 3
   train_bert: true
-  load_model: albert-unfreezed-epoch-10.pth # None
+#  load_model: albert-unfreezed-epoch-10.pth
   seq_shift: 32   # Shift each training sample +-seq_shift to get more different samples
 

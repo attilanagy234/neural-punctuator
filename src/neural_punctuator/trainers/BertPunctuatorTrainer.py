@@ -44,7 +44,7 @@ class BertPunctuatorTrainer(BaseTrainer):
 
         self.train_dataset, self.valid_dataset = get_datasets(config)
         self.train_loader, self.valid_loader = get_data_loaders(self.train_dataset, self.valid_dataset, config)
-        self.model = model.to(self.device)  #BertPunctuator(self._config).to(self.device)
+        self.model = model.to(self.device)
         self.model.train()
 
         if self._config.trainer.loss == 'NLLLoss':
@@ -55,11 +55,15 @@ class BertPunctuatorTrainer(BaseTrainer):
             log.error('Please provide a proper loss function')
             exit(1)
 
+        optimizer_args = [
+                {'params': self.model.base.parameters(), 'lr': self._config.trainer.base_learning_rate},
+                {'params': self.model.classifier.parameters(), 'lr': self._config.trainer.classifier_learning_rate}
+            ]
         if self._config.trainer.optimizer == 'adam':
-            self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self._config.trainer.learning_rate)
+            self.optimizer = torch.optim.Adam(optimizer_args)
 
         elif self._config.trainer.optimizer == 'adamw':
-            self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=self._config.trainer.learning_rate)
+            self.optimizer = torch.optim.AdamW(optimizer_args)
         else:
             log.error('Please provide a proper optimizer')
             exit(1)

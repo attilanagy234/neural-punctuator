@@ -6,7 +6,7 @@ experiment:
   name: multilangial-bert-unfreezed
 
 data:
-  data_path: D:/Data/neural-punctuator/ted_dataset/szeged/
+  data_path: D:/Data/neural-punctuator/szeged/
   train_file: TODO
   test_file: TODO
 
