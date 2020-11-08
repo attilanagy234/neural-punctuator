@@ -12,6 +12,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from neural_punctuator.utils.data import get_target_weights
 from neural_punctuator.utils.io import save, load
+from neural_punctuator.utils.loss import WeightedBinaryCrossEntropy
 from neural_punctuator.utils.metrics import get_total_grad_norm, get_eval_metrics
 from neural_punctuator.utils.tensorboard import print_metrics
 from neural_punctuator.utils.scheduler import LinearScheduler
@@ -19,6 +20,7 @@ import numpy as np
 
 torch.manual_seed(69)
 np.random.seed(69)
+torch.backends.cudnn.deterministic = True
 
 
 handler = logging.StreamHandler(sys.stdout)
@@ -32,8 +34,6 @@ log.addHandler(handler)
 class BertPunctuatorTrainer(BaseTrainer):
     def __init__(self, model, preprocessor, config):
         super().__init__(model, preprocessor, config)
-
-        # TODO: fix random seed: np, torch
 
         if self._config.trainer.use_gpu:
             self.device = torch.device('cuda:0')
@@ -49,15 +49,18 @@ class BertPunctuatorTrainer(BaseTrainer):
 
         if self._config.trainer.loss == 'NLLLoss':
             target_weights = torch.Tensor(get_target_weights(self.train_dataset.targets,
-                                                             self._config.model.num_classes)).to(self.device)
+                                                             self._config.model.num_classes)).clamp_max(10).to(self.device)
             self.criterion = nn.NLLLoss(weight=target_weights, reduction='none')
         else:
             log.error('Please provide a proper loss function')
             exit(1)
 
-
         # TODO:
-        self.binary_criterion = nn.BCELoss(reduction='none')
+        binary_target_weights = get_target_weights(self.train_dataset.targets, self._config.model.num_classes)
+        binary_target_weights = [binary_target_weights[0], sum(binary_target_weights[1:])]
+        binary_target_weights /= sum(binary_target_weights)
+        binary_target_weights = torch.Tensor(binary_target_weights).to(self.device)
+        self.binary_criterion = WeightedBinaryCrossEntropy(weights=binary_target_weights) #nn.BCELoss(reduction='none')
 
         optimizer_args = [
                 {'params': self.model.base.parameters(), 'lr': self._config.trainer.base_learning_rate},
@@ -117,16 +120,17 @@ class BertPunctuatorTrainer(BaseTrainer):
                 losses = self.criterion(preds.reshape(-1, self._config.model.num_classes),
                                    targets.to(self.device).reshape(-1))
                 mask = word_mask * mask
-                losses = mask.view(-1).to(self.device) * losses
-                loss = losses.sum() / mask.sum()
+                # losses = mask.view(-1).to(self.device) * losses
+                # loss = losses.sum() / mask.sum()
+                loss = losses.mean()
 
                 binary_targets = ((targets > 0)*1.0).to(self.device)
                 binary_preds = binary_preds.squeeze()
                 binary_loss = self.binary_criterion(binary_preds, binary_targets)
                 binary_loss = word_mask.to(self.device) * binary_loss
-                binary_loss = binary_loss.sum() / word_mask.sum()
+                binary_loss = 10 * binary_loss.sum() / word_mask.sum()
 
-                (loss + 0*binary_loss).backward()
+                (loss + binary_loss).backward()
 
                 binary_acc = (word_mask * ((binary_preds > .5).squeeze() == binary_targets)).sum().float() / word_mask.sum()
                 binary_acc = binary_acc.detach().cpu().item()
@@ -143,7 +147,7 @@ class BertPunctuatorTrainer(BaseTrainer):
                     print_metrics(printer_counter,
                                   {"loss": loss, "grads": grads, "binary_loss": binary_loss,"binary_acc": binary_acc},
                                   self.summary_writer, 'train',
-                                  model_name=self._config.experiment.name)
+                                  model_name=self._config.model.name)
                 printer_counter += 1
 
                 if self._config.debug.break_train_loop:
@@ -174,7 +178,7 @@ class BertPunctuatorTrainer(BaseTrainer):
             metrics["loss"] = valid_loss
 
             print_metrics(printer_counter, metrics, self.summary_writer, 'valid',
-                          model_name=self._config.experiment.name)
+                          model_name=self._config.model.name)
 
             # Save model every epoch
             save(self.model, self.optimizer, epoch_num+1, metrics, self._config)

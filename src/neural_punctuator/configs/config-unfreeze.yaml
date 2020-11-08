@@ -3,7 +3,7 @@ debug:
   break_train_loop: false
 
 experiment:
-  name: albert-unfreezed-mask
+  name: albert-unfreezed-binary
 
 data:
   data_path: D:/Data/neural-punctuator/ted_dataset/
@@ -33,12 +33,12 @@ trainer:
   shuffle: true
   optimizer: adamw
   loss: NLLLoss
-  base_learning_rate: 0.00005 #5e-5
+  base_learning_rate: 0.00003 #3e-5
   classifier_learning_rate: 0.0001 #1e-4
   metrics: [precision, recall, f-score, auc]
   warmup_steps: 100 #200
   clip_seq: 32
-  grad_clip: 3
+  grad_clip: 10
   train_bert: true
 #  load_model: albert-unfreezed-epoch-10.pth
   seq_shift: 32   # Shift each training sample +-seq_shift to get more different samples

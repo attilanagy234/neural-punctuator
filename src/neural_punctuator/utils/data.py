@@ -7,6 +7,8 @@ import pandas as pd
 import numpy as np
 from dotmap import DotMap
 from nltk.corpus import stopwords
+from sklearn.utils.class_weight import compute_class_weight
+
 
 handler = logging.StreamHandler(sys.stdout)
 handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)-9s %(message)s'))
@@ -80,13 +82,17 @@ def get_config_from_yaml(yaml_file):
     return config
 
 
-def get_target_weights(targets, output_dim):
-    targets = np.array(targets)
-    weights = np.zeros((output_dim,))
-    for t in range(output_dim):
-        count = (targets == t).sum()
-        weights[t] = count
+def get_target_weights(targets, output_dim, reduce_empty=True):
+    weights = compute_class_weight('balanced', range(-1, 4), targets)[1:] # exclude -1
+    # targets = np.array(targets)
+    # weights = np.zeros((output_dim,))
+    # for t in range(output_dim):
+    #     count = (targets == t).sum()
+    #     weights[t] = count
+    #
+    # if reduce_empty:
+    #     weights[0] *= 0.05
+    #
+    # weights /= weights.sum()
 
-    weights[0] *= 0.05
-    weights /= weights.sum()
     return weights
