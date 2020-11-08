@@ -50,10 +50,14 @@ class BertPunctuatorTrainer(BaseTrainer):
         if self._config.trainer.loss == 'NLLLoss':
             target_weights = torch.Tensor(get_target_weights(self.train_dataset.targets,
                                                              self._config.model.num_classes)).to(self.device)
-            self.criterion = nn.NLLLoss(weight=target_weights)
+            self.criterion = nn.NLLLoss(weight=target_weights, reduction='none')
         else:
             log.error('Please provide a proper loss function')
             exit(1)
+
+
+        # TODO:
+        self.binary_criterion = nn.BCELoss(reduction='none')
 
         optimizer_args = [
                 {'params': self.model.base.parameters(), 'lr': self._config.trainer.base_learning_rate},
@@ -96,24 +100,37 @@ class BertPunctuatorTrainer(BaseTrainer):
                 self.optimizer.zero_grad()
 
                 text, targets = data
-                preds = self.model(text.to(self.device))
+                preds, binary_preds = self.model(text.to(self.device))
 
                 # preds = preds[:, self._config.trainer.clip_seq: -self._config.trainer.clip_seq, :]
                 # targets = targets[:, self._config.trainer.clip_seq:-self._config.trainer.clip_seq]
 
                 # Mask some "empty" targets
                 mask = ((targets == 0) & (np.random.rand(*targets.shape) < .1)) | (targets > 0)
+                mask = mask.to(self.device)
 
                 # Do not predict output after tokens which are not the end of a word
-                not_a_word_mask = targets == -1
+                not_a_word_mask = (targets == -1).to(self.device)
+                word_mask = ~not_a_word_mask
                 targets[not_a_word_mask] = 0
 
                 losses = self.criterion(preds.reshape(-1, self._config.model.num_classes),
                                    targets.to(self.device).reshape(-1))
-                mask = ~not_a_word_mask * mask
+                mask = word_mask * mask
                 losses = mask.view(-1).to(self.device) * losses
                 loss = losses.sum() / mask.sum()
-                loss.backward()
+
+                binary_targets = ((targets > 0)*1.0).to(self.device)
+                binary_preds = binary_preds.squeeze()
+                binary_loss = self.binary_criterion(binary_preds, binary_targets)
+                binary_loss = word_mask.to(self.device) * binary_loss
+                binary_loss = binary_loss.sum() / word_mask.sum()
+
+                (loss + 0*binary_loss).backward()
+
+                binary_acc = (word_mask * ((binary_preds > .5).squeeze() == binary_targets)).sum().float() / word_mask.sum()
+                binary_acc = binary_acc.detach().cpu().item()
+
                 nn.utils.clip_grad_norm_(self.model.parameters(), self._config.trainer.grad_clip)
 
                 self.optimizer.step()
@@ -123,7 +140,9 @@ class BertPunctuatorTrainer(BaseTrainer):
 
                 if printer_counter != 0 and printer_counter % 10 == 0:
                     grads = get_total_grad_norm(self.model.parameters())
-                    print_metrics(printer_counter, {"loss": loss, "grads": grads}, self.summary_writer, 'train',
+                    print_metrics(printer_counter,
+                                  {"loss": loss, "grads": grads, "binary_loss": binary_loss,"binary_acc": binary_acc},
+                                  self.summary_writer, 'train',
                                   model_name=self._config.experiment.name)
                 printer_counter += 1
 
@@ -137,14 +156,14 @@ class BertPunctuatorTrainer(BaseTrainer):
             for data in tqdm(self.valid_loader):
                 text, targets = data
                 with torch.no_grad():
-                    preds = self.model(text.to(self.device))
+                    preds, _ = self.model(text.to(self.device))
 
                 word_mask = targets != -1
                 preds = preds[word_mask]
                 targets = targets[word_mask]
 
                 loss = self.criterion(preds.view(-1, self._config.model.num_classes), targets.to(self.device).view(-1))
-                valid_loss += loss.item()
+                valid_loss += loss.mean().item()
 
                 all_valid_preds.append(preds.detach().cpu().numpy())
 

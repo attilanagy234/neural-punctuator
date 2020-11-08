@@ -3,7 +3,7 @@ debug:
   break_train_loop: false
 
 experiment:
-  name: albert-unfreezed-continue
+  name: albert-unfreezed-mask
 
 data:
   data_path: D:/Data/neural-punctuator/ted_dataset/

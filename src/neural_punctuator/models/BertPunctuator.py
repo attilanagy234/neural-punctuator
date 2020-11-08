@@ -26,9 +26,9 @@ class BertPunctuator(BaseModel):
             with torch.no_grad():
                 embedding, _ = self.base(x)
 
-        output = self.classifier(embedding)
+        output, binary_output = self.classifier(embedding)
         output = F.log_softmax(output, dim=-1)
-        return output
+        return output, binary_output
 
     def train(self, mode=True):
         if mode:
@@ -52,13 +52,15 @@ class Classifier(BaseModel):
         super().__init__(None)
         self.dropout1 = nn.Dropout(config.model.dropout)
         self.linear1 = nn.Linear(config.model.bert_output_dim, config.model.linear_hidden_dim)
+        self.activation = nn.ReLU()
         self.dropout2 = nn.Dropout(config.model.dropout)
         self.linear2 = nn.Linear(config.model.linear_hidden_dim, config.model.num_classes)
-        self.activation = nn.ReLU()
+        self.binary_classifier = nn.Linear(config.model.linear_hidden_dim, 1)
 
     def forward(self, x):
         x = self.dropout1(x)
         x = self.activation(self.linear1(x))
         x = self.dropout2(x)
+        binary_output = torch.sigmoid(self.binary_classifier(x))
         x = self.linear2(x)
-        return x
+        return x, binary_output
