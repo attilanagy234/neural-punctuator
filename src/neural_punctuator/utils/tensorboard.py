@@ -10,7 +10,7 @@ def print_metrics(counter,
         metrics = metrics.copy()
         del metrics['cls_report']
 
-    print(prefix + "\t" + "\t".join([f"{key}:{value:.5f}" for key, value in metrics.items()]))
+    # print(prefix + "\t" + "\t".join([f"{key}:{value:.5f}" for key, value in metrics.items()]))
 
     if summary_writer is not None:
         assert prefix is not None

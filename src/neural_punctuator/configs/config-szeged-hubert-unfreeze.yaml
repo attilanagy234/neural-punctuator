@@ -1,14 +1,12 @@
 debug:
-  summary_writer: false
+  summary_writer: true
   break_train_loop: false
 
 experiment:
-  name: albert-unfreezed
+  name: hubert-unfreezed
 
 data:
-  data_path: D:/Data/neural-punctuator/ted_dataset/
-  train_file: TODO
-  test_file: TODO
+  data_path: /userhome/student/bial/neural-punctuator/data/szeged_hubert/
   output_labels: [empty, period, question, comma]
 
 preprocessor:
@@ -16,15 +14,15 @@ preprocessor:
 
 
 model:
-  name: albert
-  load_model_repo: albert-base-v1                            # From huggingface
+  name: hubert
+  load_model_repo: SZTAKI-HLT/hubert-base-cc  # From huggingface
   bert_output_dim: 768
   linear_hidden_dim: 1568
   num_classes: 4
   seq_len: 512
   dropout: 0.2
 
-  save_model_path: D:/Data/neural-punctuator/models/
+  save_model_path: /userhome/student/bial/neural-punctuator/data/models/
 
 trainer:
   use_gpu: cuda:0
@@ -40,6 +38,6 @@ trainer:
   clip_seq: 32
   grad_clip: 1.5
   train_bert: true
-#  load_model: albert-unfreezed-epoch-15.pth
+#  load_model: hubert-unfreezed-epoch-15.pth
   seq_shift: 32   # Shift each training sample +-seq_shift to get more different samples
 

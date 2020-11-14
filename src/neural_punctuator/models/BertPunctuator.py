@@ -6,12 +6,14 @@ import torch.nn.functional as F
 
 
 from neural_punctuator.base.BaseModel import BaseModel
+from transformers import AutoTokenizer, AutoModel
 
 
 class BertPunctuator(BaseModel):
     def __init__(self, config):
         super().__init__(config)
-        self.base = torch.hub.load(self._config.model.bert_github_repo, 'model', self._config.model.bert_variant_to_load)
+        # self.base = torch.hub.load(self._config.model.bert_github_repo, 'model', self._config.model.bert_variant_to_load)
+        self.base = AutoModel.from_pretrained(self._config.model.load_model_repo)
 
         if not self._config.trainer.train_bert:
             for param in self.base.parameters():

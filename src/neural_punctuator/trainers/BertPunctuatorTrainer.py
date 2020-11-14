@@ -38,7 +38,6 @@ class BertPunctuatorTrainer(BaseTrainer):
         if self._config.trainer.use_gpu:
             self.device = torch.device(self._config.trainer.use_gpu)
             torch.cuda.set_device(self.device)
-
         else:
             self.device = torch.device('cpu')
 
@@ -60,7 +59,6 @@ class BertPunctuatorTrainer(BaseTrainer):
         binary_target_weights = [binary_target_weights[0], sum(binary_target_weights[1:])]
         binary_target_weights /= sum(binary_target_weights)
         binary_target_weights = torch.Tensor(binary_target_weights).to(self.device)
-        self.binary_criterion = WeightedBinaryCrossEntropy(weights=binary_target_weights) #nn.BCELoss(reduction='none')
 
         optimizer_args = [
                 {'params': self.model.base.parameters(), 'lr': self._config.trainer.base_learning_rate},
@@ -99,7 +97,8 @@ class BertPunctuatorTrainer(BaseTrainer):
 
             # Train loop
             self.model.train()
-            for data in tqdm(self.train_loader):
+            pbar = tqdm(self.train_loader)
+            for data in pbar:
                 self.optimizer.zero_grad()
 
                 text, targets = data
@@ -132,12 +131,13 @@ class BertPunctuatorTrainer(BaseTrainer):
 
                 loss = loss.item()
 
-                if printer_counter != 0 and printer_counter % 10 == 0:
-                    grads = get_total_grad_norm(self.model.parameters())
-                    print_metrics(printer_counter,
-                                  {"loss": loss, "grads": grads},
-                                  self.summary_writer, 'train',
-                                  model_name=self._config.model.name)
+                grads = get_total_grad_norm(self.model.parameters())
+                pbar.set_postfix({"loss": loss, "grads": grads})
+
+                print_metrics(printer_counter,
+                              {"loss": loss, "grads": grads},
+                              self.summary_writer, 'train',
+                              model_name=self._config.model.name)
                 printer_counter += 1
 
                 if self._config.debug.break_train_loop:

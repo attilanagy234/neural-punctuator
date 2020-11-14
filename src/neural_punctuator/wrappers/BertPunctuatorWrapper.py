@@ -9,7 +9,7 @@ class BertPunctuatorWrapper(BaseWrapper):
         super().__init__(config)
 
         self._config = config
-        self._preprocessor = BertPreprocessor(config)
+        self._preprocessor = None #BertPreprocessor(config)
         self._classifier = BertPunctuator(config)
         self._trainer = BertPunctuatorTrainer(self._classifier, self._preprocessor, self._config)
 

@@ -3,10 +3,10 @@ debug:
   break_train_loop: false
 
 experiment:
-  name: multilangial-bert-unfreezed
+  name: multilangial-bert-unfreezed2
 
 data:
-  data_path: D:/Data/neural-punctuator/szeged/
+  data_path: /userhome/student/bial/neural-punctuator/data/szeged/
   train_file: TODO
   test_file: TODO
   output_labels: [empty, period, question, comma]
@@ -24,7 +24,7 @@ model:
   seq_len: 512
   dropout: 0.2
 
-  save_model_path: D:/Data/neural-punctuator/models/
+  save_model_path: /userhome/student/bial/neural-punctuator/models/
 
 trainer:
   use_gpu: cuda:0
@@ -38,7 +38,7 @@ trainer:
   metrics: [precision, recall, f-score, auc]
   warmup_steps: 300
   clip_seq: 32
-  grad_clip: 3
+  grad_clip: 1.5
   train_bert: true
   #load_model:
   seq_shift: 32   # Shift each training sample +-seq_shift to get more different samples
