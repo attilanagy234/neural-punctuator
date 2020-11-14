@@ -36,7 +36,7 @@ class BertPunctuatorTrainer(BaseTrainer):
         super().__init__(model, preprocessor, config)
 
         if self._config.trainer.use_gpu:
-            self.device = torch.device('cuda:0')
+            self.device = torch.device(self._config.trainer.use_gpu)
             torch.cuda.set_device(self.device)
 
         else:
@@ -49,7 +49,7 @@ class BertPunctuatorTrainer(BaseTrainer):
 
         if self._config.trainer.loss == 'NLLLoss':
             target_weights = torch.Tensor(get_target_weights(self.train_dataset.targets,
-                                                             self._config.model.num_classes)).clamp_max(10).to(self.device)
+                                                             self._config.model.num_classes)).clamp_max(1).to(self.device)
             self.criterion = nn.NLLLoss(weight=target_weights, reduction='none')
         else:
             log.error('Please provide a proper loss function')
@@ -123,17 +123,7 @@ class BertPunctuatorTrainer(BaseTrainer):
                 # losses = mask.view(-1).to(self.device) * losses
                 # loss = losses.sum() / mask.sum()
                 loss = losses.mean()
-
-                binary_targets = ((targets > 0)*1.0).to(self.device)
-                binary_preds = binary_preds.squeeze()
-                binary_loss = self.binary_criterion(binary_preds, binary_targets)
-                binary_loss = word_mask.to(self.device) * binary_loss
-                binary_loss = 10 * binary_loss.sum() / word_mask.sum()
-
-                (loss + binary_loss).backward()
-
-                binary_acc = (word_mask * ((binary_preds > .5).squeeze() == binary_targets)).sum().float() / word_mask.sum()
-                binary_acc = binary_acc.detach().cpu().item()
+                loss.backward()
 
                 nn.utils.clip_grad_norm_(self.model.parameters(), self._config.trainer.grad_clip)
 
@@ -145,7 +135,7 @@ class BertPunctuatorTrainer(BaseTrainer):
                 if printer_counter != 0 and printer_counter % 10 == 0:
                     grads = get_total_grad_norm(self.model.parameters())
                     print_metrics(printer_counter,
-                                  {"loss": loss, "grads": grads, "binary_loss": binary_loss,"binary_acc": binary_acc},
+                                  {"loss": loss, "grads": grads},
                                   self.summary_writer, 'train',
                                   model_name=self._config.model.name)
                 printer_counter += 1

@@ -40,4 +40,4 @@ def save(model, optimizer, epoch, metrics, config):
 def load(model, optimizer, config=None):
     checkpoint = torch.load(config.model.save_model_path + config.trainer.load_model)
     model.load_state_dict(checkpoint['model_state_dict'])
-    # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])

@@ -13,7 +13,7 @@ log.setLevel(logging.INFO)
 log.addHandler(handler)
 
 
-def get_eval_metrics(targets, preds, config=None):
+def get_eval_metrics(targets, preds, config):
     # TODO: get the desired metric list from config-frozen.yaml
     """
     Calculates metrics on validation data
@@ -29,9 +29,9 @@ def get_eval_metrics(targets, preds, config=None):
     # metric_targets = np.zeros((targets.size, config.model.num_classes))
     # metric_targets[np.arange(targets.size), targets] = 1
 
-    cls_report = get_classification_report(targets, pred_index)
-
-    print(cls_report)
+    cls_report, cls_report_print = get_classification_report(targets, pred_index, config)
+    print(cls_report_print)
+    metrics['cls_report'] = cls_report
 
     # if 'precision' in self._config.trainer.metrics:
 
@@ -58,13 +58,15 @@ def get_eval_metrics(targets, preds, config=None):
     # if self._config.trainer.visualize_conf_mx:
     if True:
         conf_mx = get_confusion_mx(targets, pred_index)
-        plot_confusion_matrix(conf_mx)
+        plot_confusion_matrix(conf_mx, config.data.output_labels)
 
     return metrics
 
 
-def get_classification_report(target, preds):
-    return classification_report(target, preds, digits=3)
+def get_classification_report(target, preds, config):
+    report = classification_report(target, preds, output_dict=True, target_names=config.data.output_labels)
+    report_print = classification_report(target, preds, digits=3, target_names=config.data.output_labels)
+    return report, report_print
 
 
 def get_confusion_mx(target, preds):
