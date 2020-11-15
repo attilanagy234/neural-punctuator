@@ -3,21 +3,18 @@ debug:
   break_train_loop: false
 
 experiment:
-  name: multilangial-bert-unfreezed2
+  name: multilangial-bert-unfreezed
 
 data:
   data_path: /userhome/student/bial/neural-punctuator/data/szeged/
-  train_file: TODO
-  test_file: TODO
   output_labels: [empty, period, question, comma]
 
 preprocessor:
   preproc_arg: TODO
 
 model:
-  name: multilangial-bert
-  bert_github_repo: huggingface/pytorch-transformers        # Github repository, where the BERT-like model is located
-  bert_variant_to_load: bert-base-multilingual-uncased      # Name of the model loaded from torch hub
+  name: szeged
+  load_model_repo: bert-base-multilingual-uncased
   bert_output_dim: 768
   linear_hidden_dim: 1568
   num_classes: 4
@@ -27,7 +24,7 @@ model:
   save_model_path: /userhome/student/bial/neural-punctuator/models/
 
 trainer:
-  use_gpu: cuda:0
+  use_gpu: cuda:1
   batch_size: 4
   num_epochs: 15
   shuffle: true
@@ -42,4 +39,5 @@ trainer:
   train_bert: true
   #load_model:
   seq_shift: 32   # Shift each training sample +-seq_shift to get more different samples
+  show_confusion_matrix: false
 

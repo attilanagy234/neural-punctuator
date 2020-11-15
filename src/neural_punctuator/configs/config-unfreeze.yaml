@@ -1,5 +1,5 @@
 debug:
-  summary_writer: false
+  summary_writer: true
   break_train_loop: false
 
 experiment:

@@ -58,7 +58,8 @@ def get_eval_metrics(targets, preds, config):
     # if self._config.trainer.visualize_conf_mx:
     if True:
         conf_mx = get_confusion_mx(targets, pred_index)
-        plot_confusion_matrix(conf_mx, config.data.output_labels)
+        if config.trainer.show_confusion_matrix:
+            plot_confusion_matrix(conf_mx, config.data.output_labels)
 
     return metrics
 

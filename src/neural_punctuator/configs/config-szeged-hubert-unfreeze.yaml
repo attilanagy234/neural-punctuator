@@ -14,7 +14,7 @@ preprocessor:
 
 
 model:
-  name: hubert
+  name: szeged
   load_model_repo: SZTAKI-HLT/hubert-base-cc  # From huggingface
   bert_output_dim: 768
   linear_hidden_dim: 1568
@@ -22,7 +22,7 @@ model:
   seq_len: 512
   dropout: 0.2
 
-  save_model_path: /userhome/student/bial/neural-punctuator/data/models/
+  save_model_path: /userhome/student/bial/neural-punctuator/models/
 
 trainer:
   use_gpu: cuda:0
@@ -40,4 +40,5 @@ trainer:
   train_bert: true
 #  load_model: hubert-unfreezed-epoch-15.pth
   seq_shift: 32   # Shift each training sample +-seq_shift to get more different samples
+  show_confusion_matrix: false
 

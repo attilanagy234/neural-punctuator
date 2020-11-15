@@ -83,6 +83,9 @@ def get_config_from_yaml(yaml_file):
 
 
 def get_target_weights(targets, output_dim, reduce_empty=True):
+    import warnings
+    warnings.filterwarnings("ignore")
+
     weights = compute_class_weight('balanced', range(-1, 4), targets)[1:] # exclude -1
     # targets = np.array(targets)
     # weights = np.zeros((output_dim,))

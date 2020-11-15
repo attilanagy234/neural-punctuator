@@ -54,12 +54,6 @@ class BertPunctuatorTrainer(BaseTrainer):
             log.error('Please provide a proper loss function')
             exit(1)
 
-        # TODO:
-        binary_target_weights = get_target_weights(self.train_dataset.targets, self._config.model.num_classes)
-        binary_target_weights = [binary_target_weights[0], sum(binary_target_weights[1:])]
-        binary_target_weights /= sum(binary_target_weights)
-        binary_target_weights = torch.Tensor(binary_target_weights).to(self.device)
-
         optimizer_args = [
                 {'params': self.model.base.parameters(), 'lr': self._config.trainer.base_learning_rate},
                 {'params': self.model.classifier.parameters(), 'lr': self._config.trainer.classifier_learning_rate}
@@ -84,7 +78,7 @@ class BertPunctuatorTrainer(BaseTrainer):
         self.all_valid_target = self.all_valid_target[self.all_valid_target != -1]
 
         if self._config.debug.summary_writer:
-            self.summary_writer = SummaryWriter(comment=self._config.experiment.name)
+            self.summary_writer = SummaryWriter(log_dir=f'neural_punctuator/runs/{self._config.experiment.name}')
             #TODO: self.summary_writer.add_hparams(self._config.toDict(), {})
         else:
             self.summary_writer = None
