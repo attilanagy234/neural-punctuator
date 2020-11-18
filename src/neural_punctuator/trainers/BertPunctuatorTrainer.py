@@ -78,7 +78,7 @@ class BertPunctuatorTrainer(BaseTrainer):
         self.all_valid_target = self.all_valid_target[self.all_valid_target != -1]
 
         if self._config.debug.summary_writer:
-            self.summary_writer = SummaryWriter(log_dir=f'neural_punctuator/runs/{self._config.experiment.name}')
+            self.summary_writer = SummaryWriter(comment=self._config.experiment.name)
             #TODO: self.summary_writer.add_hparams(self._config.toDict(), {})
         else:
             self.summary_writer = None

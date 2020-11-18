@@ -3,19 +3,18 @@ debug:
   break_train_loop: false
 
 experiment:
-  name: hubert-unfreezed
+  name: bert-base-uncased
 
 data:
-  data_path: /userhome/student/bial/neural-punctuator/data/SZTAKI-HLT/hubert-base-cc/
+  data_path: /userhome/student/bial/neural-punctuator/data/bert-base-uncased/
   output_labels: [empty, period, question, comma]
 
 preprocessor:
   preproc_arg: TODO
 
-
 model:
-  name: szeged
-  load_model_repo: SZTAKI-HLT/hubert-base-cc  # From huggingface
+  name: ted-talks
+  load_model_repo: bert-base-uncased
   bert_output_dim: 768
   linear_hidden_dim: 1568
   num_classes: 4
@@ -27,7 +26,7 @@ model:
 trainer:
   use_gpu: cuda:0
   batch_size: 4
-  num_epochs: 15
+  num_epochs: 12
   shuffle: true
   optimizer: adamw
   loss: NLLLoss
@@ -38,7 +37,7 @@ trainer:
   clip_seq: 32
   grad_clip: 1.5
   train_bert: true
-#  load_model: hubert-unfreezed-epoch-15.pth
+  #load_model:
   seq_shift: 32   # Shift each training sample +-seq_shift to get more different samples
   show_confusion_matrix: false
 
