@@ -3,7 +3,7 @@ debug:
   break_train_loop: false
 
 experiment:
-  name: albert-unfreezed
+  name: albert-base-v1
 
 data:
   data_path:  /userhome/student/bial/neural-punctuator/data/albert-base-v1/

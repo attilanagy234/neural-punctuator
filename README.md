@@ -25,7 +25,10 @@ Predicting punctuations with neural networks solely based on their textual repre
 Ted talk dataset - Acquired from here: https://zenodo.org/record/4061423?fbclid=IwAR3IkZedUbnMtPrPdmkZJXUITd_AOzluiz53dhkR_Yc01TzbOpGo9TBjDBE#.X4sNB9AzaUk
 
 ## How to run
-TODO
+Connect from Windows to tensorboard running on server:
+```
+ssh -L <local_port>:localhost:<server_port> <username>@<server url> -p <ssh port> -N
+```
 
 ## Authors
 Bence Bial, Attila Nagy
