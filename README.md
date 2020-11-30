@@ -1,36 +1,33 @@
 # neural-punctuator
-Predicting punctuations with neural networks solely based on their textual representation.
+Complimentary code for our paper **_Automatic punctuation restoration with BERT models_** submitted to the XVII. Conference on Hungarian Computational Linguistics.
 
-## Structure
+## Abstract
+We present an approach for automatic punctuation restora-tion with BERT models for English and Hungarian. For English, weconduct our experiments on Ted Talks, a commonly used benchmark forpunctuation restoration, while for Hungarian we evaluate our models onthe Szeged Treebank dataset. Our best models achieve a macro-averagedF1-score of 79.8 in English and 82.2 in Hungarian
+
+## Repository Structure
 
 ```
 .
 |-- docs
-|   └── literature  # Short summaries on the papers/sources that we have read
-|   └── paper       # The submitted paper for the homework
-|-- notebooks       # Notebooks for EDA, preprocessing, model explorations and experiments
+|   └── paper       # The submitted paper
+|-- notebooks       # Notebooks for data preparation/preprocessing
 |-- src
     └── neural_punctuator 
         ├── base            # Base classes for training Torch models
         ├── configs         # YAMl files defining the parameters of each model
-        ├── models          # Contains definitions of different Torch models
-        ├── preprocessors   # Contains model-specific preprocessor classes
-        ├── trainers        # Contains the train logic for every model
-        ├── tuners          # Contains hyperparameter optimizers
-        ├── utils           # Utility scripts
-        ├── wrappers        # Wrapper classes for the models containing all the components needed for training/prediction
-        └── main.py         # Entry point
+        ├── models          # Torch model definitions
+        ├── preprocessors   # Preprocessor class
+        ├── trainers        # Train logic
+        ├── utils           # Utility scripts (logging, metrics, tensorboard etc.)
+        └── wrappers        # Wrapper classes for the models containing all the components needed for training/prediction
 ```
 ## Dataset
-Ted talk dataset - Acquired from here: https://zenodo.org/record/4061423?fbclid=IwAR3IkZedUbnMtPrPdmkZJXUITd_AOzluiz53dhkR_Yc01TzbOpGo9TBjDBE#.X4sNB9AzaUk
+Ted Talk dataset (English) - http://hltc.cs.ust.hk/iwslt/index.php/evaluation-campaign/ted-task.html
 
-## How to run
-Connect from Windows to tensorboard running on server:
-```
-ssh -L <local_port>:localhost:<server_port> <username>@<server url> -p <ssh port> -N
-```
+Szeged Treebank (Hungarian) - https://rgai.inf.u-szeged.hu/node/113
+
 
 ## Authors
-Bence Bial, Attila Nagy
+Attila Nagy, Bence Bial, Judit Ács
 
-Budapest University of Technology and Economics
+Budapest University of Technology and Economics - Department of Automation and Applied Informatics
