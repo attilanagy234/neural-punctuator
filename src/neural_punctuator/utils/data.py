@@ -20,39 +20,6 @@ BAD_SYMBOLS_RE = re.compile('[^0-9a-z #+_]')
 
 # TODO: We might have some unused stuff here, remove them!!
 
-def get_mask_from_lengths(lengths):
-    """
-    Used for BERT masking
-    """
-    max_len = lengths.max()
-    ids = torch.arange(max_len, 0, step=-1, device=lengths.device).long()
-    return ids >= lengths.unsqueeze(1)
-
-
-def get_weights_for_sampler(train_data, target_key):
-    """
-    Useful for torch's WeightedRandomSampler in case of class imbalance
-    Params:
-        train_data (Pandas DataFrame)
-        target_key: (String): A header in train_data indicating the values to predict
-
-    Returns:
-        Weights for every train sample based on class frequency
-    """
-
-    # Convert categorical values to numbers
-    train_data['factorized_target_key'], _ = pd.factorize(train_data[target_key])
-
-    class_sample_count = np.array(
-        [len(np.where(train_data['factorized_target_key'] == t)[0])
-         for t in np.unique(train_data['factorized_target_key'])])
-    weight = 1. / class_sample_count
-    samples_weight = np.array([weight[t] for t in train_data['factorized_target_key']])
-    samples_weight = torch.from_numpy(samples_weight)
-    samples_weight = samples_weight.double()
-
-    return samples_weight
-
 
 def clean_text(text, lang):
     """

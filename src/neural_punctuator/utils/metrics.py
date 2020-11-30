@@ -33,33 +33,27 @@ def get_eval_metrics(targets, preds, config):
     print(cls_report_print)
     metrics['cls_report'] = cls_report
 
-    # if 'precision' in self._config.trainer.metrics:
 
-    if True:
-        macro_precision = precision_score(targets, pred_index, average='macro')
-        log.info(f'Macro precision is: {macro_precision}')
-        metrics['precision'] = macro_precision
-    # if 'recall' in self._config.trainer.metrics:
-    if True:
-        macro_recall = recall_score(targets, pred_index, average='macro')
-        log.info(f'Macro recall is {macro_recall}')
-        metrics['recall'] = macro_recall
-    # if 'f_score' in self._config.trainer.metrics:
-    if True:
-        macro_f1_score = f1_score(targets, pred_index, average='macro')
-        log.info(f'Macro f-score is {macro_f1_score}')
-        metrics['f_score'] = macro_f1_score
-    # if 'auc' in self._config.trainer.metrics:
-    if True:
-        auc_score = roc_auc_score(targets, preds, average='macro', multi_class='ovo')
-        log.info(f'AUC is: {auc_score}')
-        metrics['auc'] = auc_score
+    macro_precision = precision_score(targets, pred_index, average='macro')
+    log.info(f'Macro precision is: {macro_precision}')
+    metrics['precision'] = macro_precision
 
-    # if self._config.trainer.visualize_conf_mx:
-    if True:
-        conf_mx = get_confusion_mx(targets, pred_index)
-        if config.trainer.show_confusion_matrix:
-            plot_confusion_matrix(conf_mx, config.data.output_labels)
+    macro_recall = recall_score(targets, pred_index, average='macro')
+    log.info(f'Macro recall is {macro_recall}')
+    metrics['recall'] = macro_recall
+
+    macro_f1_score = f1_score(targets, pred_index, average='macro')
+    log.info(f'Macro f-score is {macro_f1_score}')
+    metrics['f_score'] = macro_f1_score
+
+    auc_score = roc_auc_score(targets, preds, average='macro', multi_class='ovo')
+    log.info(f'AUC is: {auc_score}')
+    metrics['auc'] = auc_score
+
+
+    conf_mx = get_confusion_mx(targets, pred_index)
+    if config.trainer.show_confusion_matrix:
+        plot_confusion_matrix(conf_mx, config.data.output_labels)
 
     return metrics
 
