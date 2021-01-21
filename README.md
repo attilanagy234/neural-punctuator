@@ -1,5 +1,5 @@
 # neural-punctuator
-Complimentary code for our paper [**_Automatic punctuation restoration with BERT models_**](arxiv.org/abs/2101.07343) submitted to the XVII. Conference on Hungarian Computational Linguistics.
+Complimentary code for our paper [**_Automatic punctuation restoration with BERT models_**](https://arxiv.org/abs/2101.07343) submitted to the XVII. Conference on Hungarian Computational Linguistics.
 
 ## Abstract
 We present an approach for automatic punctuation restoration with BERT models for English and Hungarian. For English, we conduct our experiments on Ted Talks, a commonly used benchmark for punctuation restoration, while for Hungarian we evaluate our models on the Szeged Treebank dataset. Our best models achieve a macro-averaged F1-score of 79.8 in English and 82.2 in Hungarian.
