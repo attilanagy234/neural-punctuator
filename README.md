@@ -27,7 +27,7 @@ Ted Talk dataset (English) - http://hltc.cs.ust.hk/iwslt/index.php/evaluation-ca
 Szeged Treebank (Hungarian) - https://rgai.inf.u-szeged.hu/node/113
 
 ## Citation
-If you use our work, please cite the following work:
+If you use our work, please cite the following paper:
 ```
 @article{nagy2021automatic,
   title={Automatic punctuation restoration with bert models},
