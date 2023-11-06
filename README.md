@@ -26,6 +26,17 @@ Ted Talk dataset (English) - http://hltc.cs.ust.hk/iwslt/index.php/evaluation-ca
 
 Szeged Treebank (Hungarian) - https://rgai.inf.u-szeged.hu/node/113
 
+## Citation
+If you use our work, please cite the following work:
+```
+@article{nagy2021automatic,
+  title={Automatic punctuation restoration with bert models},
+  author={Nagy, Attila and Bial, Bence and {\'A}cs, Judit},
+  journal={arXiv preprint arXiv:2101.07343},
+  year={2021}
+}
+```
+
 
 ## Authors
 Attila Nagy, Bence Bial, Judit Ács
